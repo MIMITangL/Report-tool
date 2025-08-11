@@ -2,7 +2,7 @@
   "name": "二大队航空事件规范报告系统",
   "short_name": "航空事件报告",
   "description": "离线可用的航空事件规范报告工具",
-  "start_url": ".",
+  "start_url": "./report-tool.html",
   "display": "standalone",
   "background_color": "#0d3a6c",
   "theme_color": "#1e5799",
