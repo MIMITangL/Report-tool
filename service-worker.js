@@ -1,7 +1,7 @@
 const CACHE_NAME = 'aviation-report-app-v1';
 const ASSETS_TO_CACHE = [
   '.',
-  '二大队信息汇报规范填写工具.html',
+  'report-tool.html',
   'manifest.json',
   'icon-192x192.png',
   'icon-512x512.png'
