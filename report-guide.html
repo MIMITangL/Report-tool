@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>航空事件报告规范说明 - 二大队航空事件规范报告系统</title>
+    <!-- PWA 元标签 -->
+    <meta name="theme-color" content="#1e5799">
+    <meta name="application-name" content="航空事件报告">
+    <!-- 苹果移动设备特定元标签 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="航空事件报告">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192x192.png">
+    <!-- PWA 图标 -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512x512.png">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0d3a6c, #1a5085);
+            color: #333;
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            position: relative;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* 目录导航样式 */
+        .toc-container {
+            position: fixed;
+            left: calc(50% - 470px);  /* 定位到页面中间偏左 */
+            top: 20px;
+            width: 260px;
+            max-height: calc(100vh - 40px);
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 0 12px 12px 0;
+            padding: 15px 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            overflow-y: auto;
+            z-index: 1000;
+            border: 1px solid #c5d7ed;
+            border-left: none;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        /* 自动显示效果 */
+        .toc-container:hover,
+        .toc-container.active {
+            transform: translateX(0);
+        }
+        
+        /* 侧边指示器 */
+        .toc-indicator {
+            position: fixed;
+            left: calc(50% - 470px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(30, 87, 153, 0.9);
+            color: white;
+            padding: 10px 4px;
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-size: 0.8rem;
+            z-index: 999;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .toc-indicator:hover {
+            background: rgba(30, 87, 153, 1);
+            padding-right: 6px;
+        }
+        
+        .toc-title {
+            color: #1e5799;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding: 0 10px;
+            text-align: center;
+            border-bottom: 2px solid #e0f0ff;
+            padding-bottom: 8px;
+        }
+        
+        .toc {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .toc a {
+            text-decoration: none;
+            color: #2c3e50;
+            display: block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .toc a:hover {
+            background: #e3f2fd;
+            color: #1e5799;
+        }
+        
+        .toc .toc-h3 {
+            padding-left: 25px;
+            font-size: 0.85rem;
+            color: #4a6fa5;
+        }
+        
+        .toc-toggle {
+            display: none;
+            position: fixed;
+            left: 15px;
+            top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1e5799;
+            border: 1px solid #c5d7ed;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            z-index: 1100;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 主内容区域调整 */
+        .main-content {
+            width: 100%;
+        }
+        
+        @media (max-width: 1200px) {
+            .toc-toggle {
+                display: block;
+            }
+            
+            .toc-indicator {
+                display: none;
+            }
+            
+            .toc-container {
+                left: -105%;
+                transform: translateX(0);
+                border-radius: 0 12px 12px 0;
+                border-left: 1px solid #c5d7ed;
+            }
+            
+            .toc-container.active {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+        
+        /* 滚动到顶部按钮 */
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #1e5799, #207cca);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
+            box-shadow: 0 4px 12px rgba(30, 87, 153, 0.3);
+        }
+        
+        .scroll-top-btn.visible {
+            opacity: 1;
+        }
+        
+        .scroll-top-btn:hover {
+            background: linear-gradient(135deg, #207cca, #2980b9);
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            position: relative;
+            border: 2px solid #2e6da4;
+        }
+        
+        .logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #1e5799, #207cca);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        
+        h1 {
+            color: #1e5799;
+            font-size: 1.6rem;
+            margin: 5px 0 0;
+            padding: 0 50px;
+            line-height: 1.3;
+        }
+        
+        .subtitle {
+            color: #4a6fa5;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #1e5799, #207cca);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 10px rgba(30, 87, 153, 0.3);
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 87, 153, 0.4);
+        }
+        
+        .back-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* 确保返回按钮在移动设备上也能正常显示 */
+        @media (max-width: 768px) {
+            .back-btn {
+                position: static;
+                margin-top: 15px;
+            }
+        }
+        
+        main {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            border: 1px solid #c5d7ed;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            color: #1e5799;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e0f0ff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        h3 {
+            color: #2e6da4;
+            font-size: 1.1rem;
+            margin: 25px 0 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+        
+        ul, ol {
+            margin-bottom: 20px;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+        
+        .highlight-box {
+            background: #e3f2fd;
+            border-left: 4px solid #1e5799;
+            padding: 18px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 0.98rem;
+        }
+        
+        .important {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .warning {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f5f9ff;
+            color: #1e5799;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f5f9ff;
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.4rem;
+                padding: 0 40px;
+            }
+            
+            .back-btn {
+                position: static;
+                margin-top: 15px;
+            }
+            
+            main {
+                padding: 18px;
+            }
+            
+            .logo {
+                position: static;
+                margin: 0 auto 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">📚</div>
+            <h1>航空事件报告规范说明</h1>
+            <p class="subtitle">了解如何规范填写航空事件报告</p>
+            <button class="back-btn" onclick="window.history.back()">← 返回主页面</button>
+        </header>
+        
+        <!-- 目录指示器 -->
+        <div class="toc-indicator" id="toc-indicator">目录导航</div>
+        
+        <!-- 目录导航 -->
+        <div class="toc-container" id="toc-container">
+            <div class="toc-title">📑 目录导航</div>
+            <ul class="toc">
+                <li><a href="#intro">📋 概述</a></li>
+                <li><a href="#report-principles">🎯 一、事件信息报告原则、分类及要求</a></li>
+                <li><a href="#report-principles" class="toc-h3">📝（一）事件信息报告原则</a></li>
+                <li><a href="#report-principles" class="toc-h3">📊（二）事件信息报告分类及要求</a></li>
+                <li><a href="#report-scope">🔍 二、事件信息报告的范围</a></li>
+                <li><a href="#report-scope" class="toc-h3">📢（一）强制信息报告</a></li>
+                <li><a href="#report-scope" class="toc-h3">📝（二）一般信息报告</a></li>
+                <li><a href="#report-procedures">📋 三、事件信息报告的程序和内容</a></li>
+                <li><a href="#report-procedures" class="toc-h3">👨✈️ （一）当事飞行机组</a></li>
+                <li><a href="#report-procedures" class="toc-h3">👨💼 （二）飞行部值班干部</a></li>
+                <li><a href="#report-procedures" class="toc-h3">🏢 （三）飞行单位</a></li>
+                <li><a href="#report-procedures" class="toc-h3">📊 （四）安全质量管理分部</a></li>
+                <li><a href="#evaluation">📈 四、评价与考核</a></li>
+                <li><a href="#evaluation" class="toc-h3">💰 （一）绩效考核</a></li>
+                <li><a href="#evaluation" class="toc-h3">📊 （二）管理成熟度考核</a></li>
+                <li><a href="#requirements">📋 五、工作要求</a></li>
+            </ul>
+        </div>
+        
+        <!-- 目录切换按钮 -->
+        <button class="toc-toggle" id="toc-toggle">📑 显示目录</button>
+        
+        <!-- 滚动到顶部按钮 -->
+        <div class="scroll-top-btn" id="scroll-top-btn">↑</div>
+        
+        <main>
+            <section id="intro">
+                <h2>📋 概述</h2>
+                <p>为规范部门事件信息报告工作要求，强化主体责任落实，提升事件信息报告的及时性、准确性和规范性，飞行部依据《航空安全管理手册》、《飞行部管理手册》以及《关于进一步明确航空安全信息报告要求的函》（川航安监函〔2024〕283号）等规章文件，结合部门实际，特此制定本规范。规范中对部门现有事件信息报告要求进行了全面梳理，进一步明确了事件信息报告分类、报告范围、内容要素、流程及时限，并强化责任追究机制，涵盖航空器运行阶段及机场活动区内各类事件，适用于飞行部各单位及全体机组。</p>
+                <div class="highlight-box">
+                    <p>本规范自2025年9月5日起试运行六个月，试运行期间若《飞行部管理手册》中存在与本规范冲突的内容，则以本规范为准，试运行结束后，将根据实际运行情况修订《飞行部管理手册》。</p>
+                </div>
+            </section>
+            
+            <section id="report-principles">
+                <h2>🎯 一、事件信息报告原则、分类及要求</h2>
+                
+                <h3>📝（一）事件信息报告原则</h3>
+                <p>在航空器运行阶段或者在机场活动区内发生各类事件，不论事件大小，不论有无后果，不论有无责任，应遵循先报告情况再调查处理的原则。在报送过程中，相关机组、责任人及单位要切实做到"初报要快（电话报）、续报要准（文字报）、终报要全（若需要）"。</p>
+                
+                <h3>📊（二） 事件信息报告分类及要求</h3>
+                <div class="highlight-box">
+                    <p><strong>强制信息报告</strong>：当事机组必须尽快通过电话进行初步报告，航后再尽快将文字报告信息报送飞行值班干部和所在飞行单位，并填报SQMS平台。</p>
+                    <p><strong>一般信息报告</strong>：仅需在航后将文字信息报送飞行值班干部和所在飞行单位，并填报SQMS平台，无需在事发时立即进行电话报告。</p>
+                    
+                </div>
+                
+                <!-- 事件信息报告流程图 -->
+                <div class="flowchart-container" style="margin: 30px 0; text-align: center;">
+                    <h3 style="color: #1e5799; margin-bottom: 15px;">📊 事件信息报告流程图</h3>
+                    <div style="max-width: 100%; overflow-x: auto;">
+                        <img src="report-flowchart.svg" alt="航空事件信息报告流程图" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    </div>
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9rem;">图：航空事件信息报告流程示意图</p>
+                </div>
+            </section>
+            
+            <section id="report-scope">
+                <h2>🔍 二、事件信息报告的范围</h2>
+                
+                <h3>📢（一）强制信息报告</h3>
+                <ul>
+                    <li>1.民用航空器事故、民用航空器征候以及《事件样例》（AC-396）中规定的民用航空事件。</li>
+                    <li>2.《运输航空公司一般事件判定指南（试行）》中列举的一、二类事件中9条带星号的事件。</li>
+                    <li>3.《航空安全管理手册》05-12"一类二类事件/航空安全差错标准"中规定的航空安全差错事件。</li>
+                    <li>4/《飞行部管理手册》02-06"三类事件/轻微差错标准"中规定的事件或不安全行为。</li>
+                    <li>5.属于国际、地区、国内局方、第三方组织机构等单位实施监督检查的安全监察信息。</li>
+                    <li>6.其它各类直接或间接影响航空安全运行的不安全事件。</li>
+                </ul>
+                
+                <h3>📝（二）一般信息报告</h3>
+                <p>在航空器运行阶段或者在机场活动区内发生各类不正常事件（除强制信息报告外的事件）。</p>
+                
+                <div class="highlight-box important">
+                    <p>注：在无法明确判断或事件性质不甚明确的情形下，飞行机组应按照强制报告程序进行汇报。</p>
+                </div>
+            </section>
+            
+            <section id="report-procedures">
+                <h2>📋 三、事件信息报告的程序和内容</h2>
+                <p>本章节明确了事件信息汇报的流程、方式和内容，以及相关人员和单位的职责，并制作了流程图，以便相关责任人员及单位遵照执行。</p>
+                           
+                <div class="flowchart-container" style="margin: 30px 0; text-align: center;">
+                    <h3 style="color: #1e5799; margin-bottom: 15px;">🔄 航空事件信息报告完整流程图</h3>
+                    <div style="max-width: 100%; overflow-x: auto;">
+                        <img src="final-flowchart.svg" alt="航空事件信息报告完整流程图" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    </div>
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9rem;">图注：航空事件信息报告完整流程，完全替换为用户要求的最新版本</p>
+                </div>
+                
+                <div class="highlight-box">
+                    <p>注：在上述信息报告流程中，信息的传递共涉及七个责任方，飞行部门内部的责任方为三个（飞行机组、飞行部值班干部、所属飞行单位）。信息报告分为两个层面，一是向公司报告，二是向部门报告。向公司报告方面，涉及的流程包括：机组→飞行部值班干部/AOC→安监部值班人员、机组→SQMS平台，此层面为责任机长负责制；向部门报告方面，流程包括机组→飞行单位→部门领导/安全质量管理分部、飞行值班干部→部门领导，此层面为全员责任制。这些传递环节将作为本规范第四部分"评价与考核"中对相关责任方的考核依据。</p>
+                </div>
+
+                <h3>👨✈️ （一）当事飞行机组</h3>
+
+                <!-- 飞行机组流程图 -->
+                <div class="flowchart-container" style="margin: 30px 0; text-align: center;">
+                    <h3 style="color: #1e5799; margin-bottom: 15px;">✈️ 飞行机组操作流程图</h3>
+                    <div style="max-width: 100%; overflow-x: auto;">
+                        <img src="flight-crew-flowchart.svg" alt="飞行机组操作流程图" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    </div>
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9rem;">图注：飞行机组在航空事件报告中的具体操作流程</p>
+                </div>
+                
+                
+                
+                <h4>1. 电话汇报（仅强制信息报告）</h4>
+                <p>为满足及时性要求，让公司和部门第一时间掌握事件信息情况，对于强制报告事件，当事飞行机组应遵循尽快、尽早报告的原则，在规定的报告时限内，通过手机/卫星电话/无线电等有效途径，报告AOC运行管理中心或/和飞行部值班干部、管制（若需）等相关单位。若事件发生时所有有效途径失效，当事飞行机组应在重新获得有效途径时，及时报告。</p>
+                
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>报告途径</th>
+                            <th>事发阶段</th>
+                            <th>报告时限</th>
+                            <th>报告人</th>
+                            <th>接收方</th>
+                        </tr>
+                        <tr>
+                            <td>通过手机/卫星电话/无线电等有效途径</td>
+                            <td>飞行时间内</td>
+                            <td>处置完事件且在确保安全的合适时机（执行完相关程序的第一时间【空中】、最迟不能晚于航班落地滑到位【地面】）</td>
+                            <td>当事飞行机组</td>
+                            <td>AOC运行管理中心或飞行部值班干部</td>
+                        </tr>
+                        <tr>
+                            <td>通过手机/卫星电话/无线电等有效途径</td>
+                            <td>其他地面阶段（飞行时间以外的运行阶段、机场活动区内）</td>
+                            <td>事件发生后立即</td>
+                            <td>当事飞行机组</td>
+                            <td>AOC运行管理中心或飞行部值班干部</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <h4>2. 文字汇报（强制信息报告/一般信息报告）</h4>
+                <p>当日航班结束后，当事飞行机组应尽快将事件的详细文字信息按照模板要求报送飞行部值班干部和各自所属飞行单位。飞行机组应从飞行值班干部处获知该事件的紧急程度（紧急/非紧急）。</p>
+                
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>事件信息报告模板</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                紧急程度：紧急/非紧急（由飞行值班干部判定）<br>
+                                事发时间：XXXX年X月X日X时X分<br>
+                                航班号：3UXXXX<br>
+                                机型：A319/A320/A321/A330/A350<br>
+                                机号：B-XXXX<br>
+                                起降地：计划起飞点-计划落地点<br>
+                                左座PF：XXXX<br>
+                                右座PM：XXXX<br>
+                                第三成员：XXXX<br>
+                                事件类型：XXXX<br>
+                                事件经过：XXXX（涉及强制报告内容的，事件经过应按照《强制报告必填要素表》&lt;见附件&gt;中的要素要求，形成事件经过文字说明。）
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <p>其中，属于国际、地区、国内局方、第三方组织机构等单位实施监督检查的信息，报告内容应包括检查时间、检查地点、是否存在问题、局方要求或建议等要素。</p>
+                <p>时限要求：对于强制信息报告，机组应不晚于航后2小时内报送；对于一般信息报告，机组应不晚于航后12小时内报送。</p>
+                
+                <div class="highlight-box">
+                    <p>注：此举是为了让飞行单位有足够的时间进行审核，并确保在规定的时间内在SQMS平台提交报告。</p>
+                </div>
+                
+                <h4>3. SQMS 平台填报（强制信息报告/一般信息报告）</h4>
+                <p>文字事件信息报告经所属飞行单位审核无误后，当事机组应按时限要求在SQMS平台提交文字材料。</p>
+                <p>时限要求：针对《事件样例》中规定的"紧急事件"，应在事发后6小时（境内）/12小时（境外）内填报；针对其它报告，应在36小时（不分境内、境外）内填报。</p>
+                
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>报告途径</th>
+                            <th>报告类型</th>
+                            <th>报告时限</th>
+                            <th>报告人</th>
+                            <th>接收方</th>
+                        </tr>
+                        <tr>
+                            <td>SQMS平台</td>
+                            <td>强制报告<br>紧急事件</td>
+                            <td>①事发后6小时（境内）/12小时（境外）内<br>②紧急事件虚假警告：事发后12小时（境内）/36小时（境外）内</td>
+                            <td>当事<br>机组</td>
+                            <td>航空安全监察部</td>
+                        </tr>
+                        <tr>
+                            <td>SQMS平台</td>
+                            <td>强制报告<br>除紧急事件外</td>
+                            <td>事发后36小时内</td>
+                            <td>当事<br>机组</td>
+                            <td>航空安全监察部</td>
+                        </tr>
+                        <tr>
+                            <td>SQMS平台</td>
+                            <td>一般信息<br>报告</td>
+                            <td>事发后36小时内</td>
+                            <td>当事<br>机组</td>
+                            <td>航空安全监察部</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="highlight-box">
+                    <p>注：</p>
+                    <p>（1）涉及警告类的强制报告，如判定为《事件样例》"紧急事件"中的假警告，应在事发后12小时（境内）/36小时（境外）内填报SQMS平台；其余虚假警告事件，应当在事发后36小时内（不分境内、境外）规范填报SQMS平台。对于吸烟、浮尘、空气清新剂、杀虫剂、发胶等气溶胶制品引起的烟雾警告，地形数据库不正确、GPS信号丢失引起的近地警告等，参照假警告的要求执行。</p>
+                    <p>（2）若因为网络、系统等原因导致SQMS平台不可用时，当事人/当事机组应通过电话、短信、办公助手等方式上报航空安全监察部值班人员，并在系统恢复可用后的3个日历日内，使用SQMS平台进行补报。</p>
+                    <p>（3）责任机长对机组信息报告内容的真实性、准确性、及时性负责。如遇需立即进行补充核实的事件信息，应当及时对事件信息进行补充报告。</p>
+                </div>
+                
+                <h3>👨💼 （二）飞行部值班干部</h3>
+                <ul>
+                    <li>飞行部值班干部在收到机组电话报告或/和AOC运行管理中心通报后，应记录事件关键要素并立即向飞行部分管安全的副总经理、飞行部总经理、飞行部党委书记报告。后期如有信息变化或更新，也应当及时向部门领导补充报告，确保信息传递及时、准确。</li>
+                    <li>若飞行部值班干部首先收到机组电话报告，飞行部值班干部还应立即将该信息与AOC运行管理中心进行共享。</li>
+                    <li>飞行部值班干部在收到机组航后的文字报告后，应首先判断事件的紧急程度（紧急/非紧急）并告知飞行机组。对于强制信息报告，应立即向飞行部分管安全的副总经理、飞行部总经理、飞行部党委书记报告；对于一般信息报告，应尽快向报送对象报告。</li>
+                    <li>如遇紧急事件、公司启动应急响应的事件、机械故障导致的返航和备降事件、重大突发事件、敏感事件、经部门研判需要报送或上级单位要求报送的其他航空安全相关事件，飞行部值班干部在收到机组电话报告或AOC运行管理中心通报后，需立即研判并通过电话向航空安全监察部值班人员报送初步情况，并于10分钟内按照模板向航空安全监察部值班人员报送书面报告。飞行部值班干部应协助机组共同完成文字信息编写，以确保航班落地到位后30分钟内，值班干部能向公司报送基本情况。</li>
+                </ul>
+                
+                <h3>🏢 （三）飞行单位</h3>
+                <ul>
+                    <li>飞行单位在收到机组信息报告后，对于强制信息报告中的紧急事件（不含虚假警告），应在收到信息后的1小时内依次向飞行部分管安全的副总经理、飞行部总经理、飞行部党委书记报告；对于其它强制报告，应在2小时内向报送对象报告。</li>
+                    <li>飞行单位在收到机组信息报告后，对于强制信息报告，应在收到信息后的4小时内将文字信息通过办公助手报送安全质量管理分部；对于一般信息报告，应在收到信息的10小时内，将文字信息通过办公助手报送安全质量管理分部。</li>
+                    <li>责任机长所在单位对事件信息文字报送飞行值班干部和填报SQMS平台的及时性和准确性负责；全体机组所在单位对事件信息报送飞行部的及时性和准确性负责。</li>
+                    <li>分公司飞行分部应在满足飞行部信息传递流程的前提下，配合当地分公司的管理要求。</li>
+                </ul>
+                
+                <h3>📊 （四）安全质量管理分部</h3>
+                <ul>
+                    <li>安全质量管理分部收到飞行单位的事件信息报告后，进行每日信息汇总，并报送飞行部分管安全的副总经理、飞行部总经理、飞行部党委书记。</li>
+                    <li>安全质量管理分部应及时根据事件具体情况视情开展跟踪和分析等工作，并根据事件性质，启动风险事件监控机制或事件调查，并在后续报告中提交情况说明或调查报告。</li>
+                    <li>安全质量管理分部负责处理、回复和跟踪强制报告的安全信息，无特殊情况下，应于5个工作日内完成信息处理，在规定期限内不能关闭的信息需备注原因。</li>
+                </ul>
+            </section>
+            
+            <section id="evaluation">
+                <h2>📈 四、评价与考核</h2>
+                
+                <h3>💰 （一）绩效考核</h3>
+                <ol>
+                    <li>针对公司层面信息报送考核，涉及机组→飞行部值班干部/AOC→安监部值班人员、机组→SQMS平台两个流程，为责任机长负责制，考核对象为责任机长及其所属单位。机组未按照部门信息报告要求漏报/迟报信息，根据报送责任涉及的环节数量，对责任机长所属单位和责任机长进行如下考核。</li>
+                </ol>
+                
+                <div class="highlight-box important">
+                    <p>（1）对于强制信息报告：责任机长所在单位安全质量考核分扣0.5-2分；当事责任机长扣除个人绩效考评0.5-2分。若经最终调查，事件中存在机组责任原因，则责任机长所在单位单位安全质量考核改扣为3分，当事责任机长个人绩效考评改扣为3分，并在部门安委会通报。</p>
+                    <p>（2）对于一般信息报告：上述考核扣分减半。</p>
+                </div>
+                
+                <ol start="2">
+                    <li>飞行部部门层面信息报送考核，涉及机组→飞行单位→部门领导/安全质量管理分部的报送流程，为全员责任制，考核对象为机组全员以及全员所属单位。</li>
+                </ol>
+                
+                <div class="highlight-box important">
+                    <p>（1）机组或机组所在单位未按照部门信息报告要求漏报/迟报信息，根据报送责任涉及的环节数量，对相关单位或当事机组进行如下考核。</p>
+                    <p>① 对于强制信息报告：当事责任机长所在单位安全质量考核分扣0.5-2分；当事责任机长扣除个人绩效考评0.5-1分。若经最终调查，事件中存在机组责任原因，则责任机长所在单位单位安全质量考核改扣为3分，当事责任机长个人绩效考评改扣为3分，并在部门安委会通报；其他机组成员及其所属单位的扣分标准按上述分值减半执行。</p>
+                    <p>② 对于一般信息报告：上述考核扣分减半。</p>
+                    
+                    <p>（2）机组报告内容关键要素不全，机组所在单位未核实机组报告信息准确性，对相关单位和当事机组进行如下考核。</p>
+                    <p>① 对于强制信息报告：当事责任机长所在单位安全质量考核扣0.5分；当事责任机长个人绩效考评扣除0.5分。若经最终调查，缺失的关键要素会对事件定性产生影响，则当事责任机长所在单位安全质量考核改扣为2分，当事责任机长个人绩效考评改扣为2分，其他机组成员及所属单位减半扣分。</p>
+                    <p>② 对于一般信息报告：上述考核扣分减半。</p>
+                    
+                    <p>（3）机组报告内容存在明显避重就轻，且经最终调查，事件中存在机组责任原因，当事机组所在单位未核实机组报告信息准确性，对相关单位和当事机组进行如下考核。</p>
+                    <p>① 对于强制信息报告：当事责任机长所在单位安全质量考核分扣3分；当事责任机长个人绩效考评扣3分，其他机组成员及所属单位减半扣分，并在部门安委会通报。</p>
+                    <p>② 对于一般信息报告：上述考核扣分减半。</p>
+                    
+                    <p>（4）机组报告内容有明显瞒报、谎报，存在有意误导事件性质的，当事责任机长所在单位未核实机组报告信息准确性，对当事责任机长所在单位和当事责任机长进行如下考核。</p>
+                    <p>① 对于强制信息报告：当事责任机长所在单位安全质量考核分扣10分；当事责任机长扣除个人绩效考评10分，其他机组成员及所属单位减半扣分，并在部门安委会通报。</p>
+                    <p>② 对于一般信息报告：上述考核扣分减半。</p>
+                </div>
+                
+                <ol start="3">
+                    <li>各单位干部在履行部门值班干部职责时，未按照部门信息报告要求报告信息，根据报送责任涉及的环节数量，相关单位安全质量考核分扣0.5-1分，并在部门安委会通报。</li>
+                    <li>若同一机长在任意连续三个日历月内出现两次未依照部门信息报告要求的情况，第二次的绩效扣分在原基础上上浮50%。</li>
+                    <li>若同一单位在任意连续三个日历月内出现两次未依照部门信息报告要求的情况，部门将对该单位下发《安全警示单》；若同一单位在同一年度内出现三次未依照部门信息报告要求的情况，部门将对该单位下发《安全整改单》，并按照《飞行部管理手册》03-23"干部管理责任考核规定"对飞行大队/飞行分部以及飞行中队干部进行考核。</li>
+                </ol>
+                
+                <h3>📊 （二）管理成熟度考核</h3>
+                <ol>
+                    <li>单位当月无漏报、迟报、误报，管理成熟度+1分/月。</li>
+                    <li>单位当月出现漏报、迟报、误报的情况，按照单位当月报告不符合次数，相关单位当月管理成熟度-1分/次。</li>
+                    <li>因强制报告不规范，被安监部通报或下发整改情况，相关单位管理成熟度-2分/次。</li>
+                </ol>
+            </section>
+            
+            <section id="requirements">
+                <h2>📋 五、工作要求</h2>
+                <div class="highlight-box warning">
+                    <ol>
+                        <li>（一）各单位应及时组织全体人员对本规范开展学习，抓紧抓实航空安全信息报送工作，对于未落实信息报告要求的单位和个人，将严格按照本规范进行考核。</li>
+                        <li>（二）本规范自2025年9月5日起试运行六个月，试运行期间若《飞行部管理手册》中存在与本规范冲突的内容，则以本规范为准，试运行结束后，将根据实际运行情况修订《飞行部管理手册》。</li>
+                    </ol>
+                </div>
+                
+            </section>
+        </main>
+    </div>
+    
+    <script>
+        // 目录切换功能
+        const tocToggle = document.getElementById('toc-toggle');
+        const tocContainer = document.getElementById('toc-container');
+        const tocIndicator = document.getElementById('toc-indicator');
+        
+        tocToggle.addEventListener('click', function() {
+            tocContainer.classList.toggle('active');
+            if (tocContainer.classList.contains('active')) {
+                tocToggle.textContent = '📑 隐藏目录';
+            } else {
+                tocToggle.textContent = '📑 显示目录';
+            }
+        });
+        
+        // 指示器点击事件
+        tocIndicator.addEventListener('click', function() {
+            tocContainer.classList.toggle('active');
+        });
+        
+        // 点击目录外部关闭目录
+        document.addEventListener('click', function(event) {
+            // 在移动设备上点击外部关闭目录
+            if (window.innerWidth <= 1200) {
+                if (!tocContainer.contains(event.target) && event.target !== tocToggle && event.target !== tocIndicator) {
+                    tocContainer.classList.remove('active');
+                    tocToggle.textContent = '📑 显示目录';
+                }
+            } else {
+                // 在桌面设备上，只有点击指示器才保持打开
+                if (!tocContainer.contains(event.target) && event.target !== tocIndicator) {
+                    tocContainer.classList.remove('active');
+                }
+            }
+        });
+        
+        // 滚动到顶部功能
+        const scrollTopBtn = document.getElementById('scroll-top-btn');
+        
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+        
+        scrollTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // 平滑滚动到锚点
+        document.querySelectorAll('.toc a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                }
+                
+                // 在移动设备上点击后关闭目录
+                if (window.innerWidth <= 1200) {
+                    tocContainer.classList.remove('active');
+                    tocToggle.textContent = '📑 显示目录';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
