@@ -223,6 +223,11 @@
             margin-top: 2px;
         }
         
+        input::placeholder, textarea::placeholder {
+            color: #9aa7b5;
+            opacity: 1;
+        }
+        
         textarea {
             min-height: 160px;
             resize: vertical;
@@ -284,6 +289,55 @@
         
         .form-row-row > div {
             flex: 1;
+        }
+        
+        .crew-section {
+            margin-bottom: 16px;
+        }
+        
+        .crew-section h3 {
+            color: #1e5799;
+            font-size: 1.05rem;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .crew-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+        
+        .crew-card {
+            background: #f8fbff;
+            border: 2px solid #c5d9f0;
+            border-radius: 10px;
+            padding: 14px;
+        }
+        
+        .crew-card-title {
+            color: #1e5799;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        
+        .crew-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .crew-fields label {
+            font-size: 0.92rem;
+            margin-bottom: 5px;
+        }
+        
+        .crew-fields input, .crew-fields select {
+            padding: 10px 12px;
+            font-size: 0.96rem;
         }
         
         .buttons {
@@ -470,41 +524,16 @@
                         <div class="form-row-row">
                             <div>
                                 <label class="required">起飞地</label>
-                                <input type="text" id="departure" placeholder="机场代码">
+                                <input type="text" id="departure" placeholder="ZUUU（双流）">
                             </div>
                             <div>
                                 <label class="required">降落地</label>
-                                <input type="text" id="arrival" placeholder="机场代码">
+                                <input type="text" id="arrival" placeholder="ZBAA（北京）">
                             </div>
                         </div>
                     </div>
                     
                     <div>
-                        <div class="form-row">
-                            <label class="required">左座</label>
-                            <input type="text" id="leftseat" placeholder="姓名/角色">
-                        </div>
-                        
-                        <div class="form-row">
-                            <label class="required">右座</label>
-                            <input type="text" id="rightseat" placeholder="姓名/角色">
-                        </div>
-                        
-                        <div class="form-row">
-                            <label>第三成员</label>
-                            <input type="text" id="third" placeholder="姓名">
-                        </div>
-                        
-                        <div class="form-row">
-                            <label>第四成员</label>
-                            <input type="text" id="fourth" placeholder="姓名">
-                        </div>
-                        
-                        <div class="form-row">
-                            <label class="required">责任机长</label>
-                            <input type="text" id="pic" placeholder="姓名">
-                        </div>
-                        
                         <div class="form-row">
                             <label class="required">事件类型</label>
                             <div class="searchable-select">
@@ -514,31 +543,139 @@
                                 </select>
                             </div>
                         </div>
-                        
-                        <div class="form-row">
-                            <label class="required">汇报值班干部</label>
-                            <select id="leader">
-                                <option value="">请选择</option>
-                                <option value="是">是</option>
-                                <option value="否">否</option>
-                                <option value="稍后汇报" selected>稍后汇报</option>
-                            </select>
+                    </div>
+                </div>
+                
+                <!-- 机组信息 -->
+                <div class="crew-section">
+                    <h3>👨‍✈️ 机组信息</h3>
+                    <div class="crew-grid">
+                        <div class="crew-card">
+                            <div class="crew-card-title">左座</div>
+                            <div class="crew-fields">
+                                <div>
+                                    <label>姓名</label>
+                                    <input type="text" id="leftseatName" placeholder="姓名">
+                                </div>
+                                <div>
+                                    <label>PF/PM</label>
+                                    <select id="leftseatRole">
+                                        <option value="PF" selected>PF</option>
+                                        <option value="PM">PM</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>技术等级</label>
+                                    <select id="leftseatLevel" class="crew-level">
+                                        <option value="">请选择</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>所属单位</label>
+                                    <input type="text" id="leftseatUnit" placeholder="如 1-2">
+                                </div>
+                                <div>
+                                    <label>是否责任机长</label>
+                                    <select id="leftseatPic">
+                                        <option value="是" selected>是</option>
+                                        <option value="否">否</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         
-                        <div class="form-row">
-                            <label class="required">填报SQMS</label>
-                            <select id="sqms">
-                                <option value="">请选择</option>
-                                <option value="是">是</option>
-                                <option value="否">否</option>
-                                <option value="稍后填报" selected>稍后填报</option>
-                            </select>
+                        <div class="crew-card">
+                            <div class="crew-card-title">右座</div>
+                            <div class="crew-fields">
+                                <div>
+                                    <label>姓名</label>
+                                    <input type="text" id="rightseatName" placeholder="姓名">
+                                </div>
+                                <div>
+                                    <label>PF/PM</label>
+                                    <select id="rightseatRole">
+                                        <option value="PM" selected>PM</option>
+                                        <option value="PF">PF</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>技术等级</label>
+                                    <select id="rightseatLevel" class="crew-level">
+                                        <option value="">请选择</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>所属单位</label>
+                                    <input type="text" id="rightseatUnit" placeholder="如 1-2">
+                                </div>
+                                <div>
+                                    <label>是否责任机长</label>
+                                    <select id="rightseatPic">
+                                        <option value="否" selected>否</option>
+                                        <option value="是">是</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="crew-card">
+                            <div class="crew-card-title">第三成员</div>
+                            <div class="crew-fields">
+                                <div>
+                                    <label>姓名</label>
+                                    <input type="text" id="thirdName" placeholder="姓名">
+                                </div>
+                                <div>
+                                    <label>技术等级</label>
+                                    <select id="thirdLevel" class="crew-level">
+                                        <option value="">请选择</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>所属单位</label>
+                                    <input type="text" id="thirdUnit" placeholder="如 1-2">
+                                </div>
+                                <div>
+                                    <label>是否责任机长</label>
+                                    <select id="thirdPic">
+                                        <option value="否" selected>否</option>
+                                        <option value="是">是</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="crew-card">
+                            <div class="crew-card-title">第四成员</div>
+                            <div class="crew-fields">
+                                <div>
+                                    <label>姓名</label>
+                                    <input type="text" id="fourthName" placeholder="姓名">
+                                </div>
+                                <div>
+                                    <label>技术等级</label>
+                                    <select id="fourthLevel" class="crew-level">
+                                        <option value="">请选择</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>所属单位</label>
+                                    <input type="text" id="fourthUnit" placeholder="如 1-2">
+                                </div>
+                                <div>
+                                    <label>是否责任机长</label>
+                                    <select id="fourthPic">
+                                        <option value="否" selected>否</option>
+                                        <option value="是">是</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="form-row">
-                    <label class="required">事件描述</label>
+                    <label class="required">事件简述</label>
                     <textarea id="eventDetails" placeholder="请根据事件类型要点，详细描述事件经过、处置措施和相关细节..."></textarea>
                 </div>
                 
@@ -1675,6 +1812,7 @@
         // 页面加载时初始化
         document.addEventListener('DOMContentLoaded', function() {
             initEventTypeDropdown();
+            initCrewLevels();
             setCurrentDateTime();
         });
         
@@ -1696,6 +1834,21 @@
                 option.textContent = type.name;
                 option.dataset.name = type.name; // 存储名称用于搜索
                 eventTypeSelect.appendChild(option);
+            });
+        }
+        
+        // 技术等级选项
+        const TECH_LEVELS = ['教C', '教B', '教A', '教A*', '机A', '机A*', '机B', '机C', 'FA', 'FA*', 'FB', 'FB*', 'FC', 'FD', 'FE'];
+        
+        // 初始化机组技术等级下拉框
+        function initCrewLevels() {
+            document.querySelectorAll('select.crew-level').forEach(select => {
+                TECH_LEVELS.forEach(level => {
+                    const option = document.createElement('option');
+                    option.value = level;
+                    option.textContent = level;
+                    select.appendChild(option);
+                });
             });
         }
         
@@ -1878,36 +2031,30 @@
             const aircraftReg = document.getElementById('aircraftReg').value || '未填写';
             const departure = document.getElementById('departure').value || '未填写';
             const arrival = document.getElementById('arrival').value || '未填写';
-            const leftseat = document.getElementById('leftseat').value || '未填写';
-            const rightseat = document.getElementById('rightseat').value || '未填写';
-            const third = document.getElementById('third').value || '未填写';
-            const fourth = document.getElementById('fourth').value || '未填写';
-            const pic = document.getElementById('pic').value || '未填写';
             const eventType = document.getElementById('eventType');
             const eventTypeName = eventType.options[eventType.selectedIndex]?.text || '未选择';
             const eventDetails = document.getElementById('eventDetails').value || '未填写';
-            const leader = document.getElementById('leader').value || '未填写';
-            const sqms = document.getElementById('sqms').value || '未填写';
+            
+            // 机组信息行（左座/右座始终显示，第三/第四成员填了姓名才显示）
+            const leftseatLine = buildCrewLine('左座' + document.getElementById('leftseatRole').value, 'leftseat', false);
+            const rightseatLine = buildCrewLine('右座' + document.getElementById('rightseatRole').value, 'rightseat', false);
+            const thirdLine = buildCrewLine('第三成员', 'third', true);
+            const fourthLine = buildCrewLine('第四成员', 'fourth', true);
             
             // 构建报告内容
-            const report = `
-紧急程度: ${urgency}
-事发时间: ${formatDateTime(eventTime)}
-航班号: ${flightNumber}
-机型: ${aircraftModel}
-机号: ${aircraftReg}
-起降地: ${departure} -> ${arrival}
-左座PF/PM: ${leftseat}
-右座PF/PM: ${rightseat}
-第三成员: ${third || "无"}
-第四成员: ${fourth || "无"}
-责任机长: ${pic}
-事件类型: ${eventTypeName}
-事件描述:
-${eventDetails}
-
-是否汇报干部: ${leader}
-是否填报SQMS: ${sqms}
+            let report = `紧急程度：${urgency}
+事发时间：${formatDateTime(eventTime)}
+航班号：${flightNumber}
+机型：${aircraftModel}
+机号：${aircraftReg}
+起降地：${departure}-${arrival}
+${leftseatLine}
+${rightseatLine}`;
+            if (thirdLine) report += `\n${thirdLine}`;
+            if (fourthLine) report += `\n${fourthLine}`;
+            report += `
+事件类型：${eventTypeName}
+事件简述：${eventDetails}
 `;
             
             document.getElementById('reportOutput').textContent = report;
@@ -1916,11 +2063,28 @@ ${eventDetails}
             window.scrollTo(0, 0);
         }
         
+        // 构建机组信息行（角色：姓名（技术等级）(责任机长)（所属单位））
+        function buildCrewLine(roleLabel, prefix, optional) {
+            const name = document.getElementById(prefix + 'Name').value.trim();
+            const level = document.getElementById(prefix + 'Level').value;
+            const unit = document.getElementById(prefix + 'Unit').value.trim();
+            const isPic = document.getElementById(prefix + 'Pic').value === '是';
+            
+            if (optional && !name) return '';
+            
+            let line = `${roleLabel}：${name || '未填写'}`;
+            if (level) line += `（${level}）`;
+            if (isPic) line += `(责任机长)`;
+            if (unit) line += `（${unit}）`;
+            return line;
+        }
+        
         // 转换日期时间格式
         function formatDateTime(dtStr) {
             if (!dtStr) return "未填写";
             const dt = new Date(dtStr);
-            return `${dt.getFullYear()}-${(dt.getMonth()+1).toString().padStart(2, '0')}-${dt.getDate().toString().padStart(2, '0')} ${dt.getHours().toString().padStart(2, '0')}:${dt.getMinutes().toString().padStart(2, '0')}`;
+            const pad = n => n.toString().padStart(2, '0');
+            return `${dt.getFullYear()}年${pad(dt.getMonth()+1)}月${pad(dt.getDate())}日${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
         }
         
         // 复制到剪贴板
@@ -1955,14 +2119,18 @@ ${eventDetails}
             document.getElementById('aircraftReg').value = '';
             document.getElementById('departure').value = '';
             document.getElementById('arrival').value = '';
-            document.getElementById('leftseat').value = '';
-            document.getElementById('rightseat').value = '';
-            document.getElementById('third').value = '';
-            document.getElementById('fourth').value = '';
-            document.getElementById('pic').value = '';
             document.getElementById('eventDetails').value = '';
-            document.getElementById('leader').value = '稍后汇报'; 
-            document.getElementById('sqms').value = '稍后填报';
+            
+            // 清空机组信息
+            ['leftseat', 'rightseat', 'third', 'fourth'].forEach(prefix => {
+                document.getElementById(prefix + 'Name').value = '';
+                document.getElementById(prefix + 'Level').value = '';
+                document.getElementById(prefix + 'Unit').value = '';
+                document.getElementById(prefix + 'Pic').value = '否';
+            });
+            document.getElementById('leftseatRole').value = 'PF';
+            document.getElementById('rightseatRole').value = 'PM';
+            document.getElementById('leftseatPic').value = '是';
             
             setCurrentDateTime();
             
